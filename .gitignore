@@ -1,0 +1,9 @@
+/.metadata/
+/.idea/workspace.xml
+target/
+.settings/
+.idea/
+dependency-reduced-pom.xml
+.project
+.classpath
+*.iml

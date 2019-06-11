@@ -1,0 +1,3 @@
+Export-Package: io.codekontor.mvnresolver, io.codekontor.mvnresolver.api
+Import-Package: com.google.common.base,com.google.common.collect,*
+-snapshot: BUILD-${tstamp}
