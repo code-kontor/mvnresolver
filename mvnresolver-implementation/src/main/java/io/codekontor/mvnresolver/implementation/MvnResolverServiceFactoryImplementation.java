@@ -15,27 +15,18 @@
  */
 package io.codekontor.mvnresolver.implementation;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
+import io.codekontor.mvnresolver.api.IMvnResolverService;
+import io.codekontor.mvnresolver.api.IMvnResolverServiceFactory;
+import org.jboss.shrinkwrap.resolver.api.InvalidConfigurationFileException;
 import org.jboss.shrinkwrap.resolver.api.Resolvers;
 import org.jboss.shrinkwrap.resolver.api.maven.ConfigurableMavenResolverSystem;
 import org.jboss.shrinkwrap.resolver.api.maven.repository.MavenRemoteRepositories;
 import org.jboss.shrinkwrap.resolver.api.maven.repository.MavenRemoteRepository;
-import org.jboss.shrinkwrap.resolver.api.maven.repository.MavenUpdatePolicy;
-import io.codekontor.mvnresolver.api.IMvnResolverService;
-import io.codekontor.mvnresolver.api.IMvnResolverServiceFactory;
 
-/**
- * <p>
- * </p>
- *
- * @author Gerd W&uuml;therich (gerd.wuetherich@codekontor.io)
- */
+import java.io.File;
+
 public class MvnResolverServiceFactoryImplementation implements IMvnResolverServiceFactory {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public MvnResolverServiceFactoryBuilder newMvnResolverService() {
 
@@ -74,9 +65,8 @@ public class MvnResolverServiceFactoryImplementation implements IMvnResolverServ
          * {@inheritDoc}
          */
         @Override
-        public MvnResolverServiceFactoryBuilder withRemoteRepository(String id, String url) {
-            MavenRemoteRepository mavenRemoteRepository = MavenRemoteRepositories.createRemoteRepository(id, url, "default");
-            mavenRemoteRepository.setUpdatePolicy(MavenUpdatePolicy.UPDATE_POLICY_NEVER);
+        public MvnResolverServiceFactoryBuilder withRemoteRepository(String id, String url, String layout) {
+            MavenRemoteRepository mavenRemoteRepository = MavenRemoteRepositories.createRemoteRepository(id, url, layout);
             _resolverSystem.withRemoteRepo(mavenRemoteRepository);
             return this;
         }
@@ -85,8 +75,53 @@ public class MvnResolverServiceFactoryImplementation implements IMvnResolverServ
          * {@inheritDoc}
          */
         @Override
-        public MvnResolverServiceFactoryBuilder withDefaultRemoteRepository() {
-            return withRemoteRepository("central", "http://repo1.maven.org/maven2");
+        public MvnResolverServiceFactoryBuilder withRemoteRepository(String id, String url) {
+            return withRemoteRepository(id, url, "default");
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public MvnResolverServiceFactoryBuilder withMavenCentralRepo(boolean withMavenCentralRepo) {
+            _resolverSystem.withMavenCentralRepo(withMavenCentralRepo);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public MvnResolverServiceFactoryBuilder withOffline(boolean b) {
+            _resolverSystem.workOffline(b);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public MvnResolverServiceFactoryBuilder withOffline() {
+            _resolverSystem.workOffline();
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public MvnResolverServiceFactoryBuilder withSettingsFile(File file) throws IllegalArgumentException, InvalidConfigurationFileException {
+            _resolverSystem.fromFile(file);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public MvnResolverServiceFactoryBuilder withSettingsFile(String s) throws IllegalArgumentException, InvalidConfigurationFileException {
+            _resolverSystem.fromFile(s);
+            return this;
         }
 
         /**

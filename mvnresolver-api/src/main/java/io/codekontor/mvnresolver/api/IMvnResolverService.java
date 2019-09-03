@@ -29,156 +29,178 @@ import java.net.URL;
  */
 public interface IMvnResolverService {
 
-  /**
-   *
-   * @param coordinate
-   * @return
-   */
-  IMvnCoordinate parseCoordinate(String coordinate);
-
-  /**
-   * <p>
-   * Resolves the maven artifacts with the specified coordinates. The artifact coordinates have to be in the following
-   * format: {@code <groupId>:<artifactId>[:<extension>[:<classifier>]]:<version>}
-   * </p>
-   *
-   * @param coords
-   *          The artifact coordinates in the format
-   *          {@code <groupId>:<artifactId>[:<extension>[:<classifier>]]:<version>}, must not be {@code null}.
-   * @return the resolved files in the local file system
-   */
-  File[] resolve(String... coords);
-
-  /**
-   *
-   * @param canonicalForm
-   * @return
-   */
-  File resolveArtifact(String canonicalForm);
-  
-  /**
-   * <p>
-   * Create a new {@link IMvnResolverJob}. Using a {@link IMvnResolverJob} instead of calling
-   * {@link IMvnResolverService#resolve(String...)} allows you to specify more fine-grained request (e.g. with support
-   * for exclusion and inclusion patterns.
-   * </p>
-   * <p>
-   * Example:
-   *
-   * <pre>
-   * <code>
-   * File[] files = mvnResolverService.newMvnResolverJob()
-   *    .withDependencies("net.bytebuddy:byte-buddy:jar:1.8.5", "org.mockito:mockito-core:jar:2.18.3")
-   *    .withExclusionPattern("*:byte-buddy-*").resolve();
-   * </code>
-   * </pre>
-   * </p>
-   *
-   * @return a new {@link IMvnResolverJob}.
-   */
-  IMvnResolverJob newMvnResolverJob();
-
-  /**
-   * <p>
-   * </p>
-   *
-   * @author Gerd W&uuml;therich (gerd.wuetherich@codekontor.io)
-   */
-  public interface IMvnResolverJob {
-
     /**
      * <p>
+     * Resolves the specified maven coordinate. The coordinate havs to be in the following
+     * format: {@code groupId:artifactId[:packaging][:classifier]:version}
      * </p>
      *
-     * @param coord
-     * @return
+     * @param coordinate the coordinate to resolve
+     * @return an instance of type IMvnCoordinate
      */
-    IMvnResolverJob withDependency(String coord);
+    IMvnCoordinate parseCoordinate(String coordinate);
 
     /**
      * <p>
+     * Resolves the maven artifacts with the specified coordinates. The artifact coordinates have to be in the following
+     * format: {@code <groupId>:<artifactId>[:<extension>[:<classifier>]]:<version>}
      * </p>
      *
-     * @param coords
-     * @return
+     * @param transitive  whether or not the dependencies should be resolved transitively
+     * @param coordinates The artifact coordinates in the format
+     *                    {@code <groupId>:<artifactId>[:<extension>[:<classifier>]]:<version>}, must not be {@code null}.
+     * @return the resolved files in the local file system
      */
-    IMvnResolverJob withDependencies(String... coords);
+    File[] resolve(boolean transitive, String... coordinates);
 
     /**
      * <p>
+     * Resolves the maven artifacts with the specified coordinates. The artifact coordinates have to be in the following
+     * format: {@code <groupId>:<artifactId>[:<extension>[:<classifier>]]:<version>}
      * </p>
      *
-     * @param pattern
-     * @return
+     * @param coordinates The artifact coordinates in the format
+     *                    {@code <groupId>:<artifactId>[:<extension>[:<classifier>]]:<version>}, must not be {@code null}.
+     * @return the resolved files in the local file system
      */
-    IMvnResolverJob withExclusionPattern(String pattern);
+    File[] resolve(String... coordinates);
 
     /**
      * <p>
+     * Resolves the maven artifact with the specified coordinate. The artifact coordinate has to be in the following
+     * format: {@code <groupId>:<artifactId>[:<extension>[:<classifier>]]:<version>}
      * </p>
      *
-     * @param patterns
-     * @return
+     * @param coordinate coordinates in the format
+     *                   {@code <groupId>:<artifactId>[:<extension>[:<classifier>]]:<version>}, must not be {@code null}.
+     * @return the resolved file in the local file system
      */
-    IMvnResolverJob withExclusionPatterns(String... patterns);
+    File resolveArtifact(String coordinate);
 
     /**
      * <p>
-     * Adds a simple filter to include artifacts. The artifact pattern syntax is of the form:
+     * Create a new {@link IMvnResolverJob}. Using a {@link IMvnResolverJob} instead of calling
+     * {@link IMvnResolverService#resolve(boolean, String...)} allows you to specify more fine-grained request (e.g. with support
+     * for exclusion and inclusion patterns.
+     * </p>
+     * <p>
+     * Example:
      *
      * <pre>
-     * [groupId]:[artifactId]:[extension]:[version]
+     * <code>
+     * File[] files = mvnResolverService.newMvnResolverJob()
+     *    .withDependencies("net.bytebuddy:byte-buddy:jar:1.8.5", "org.mockito:mockito-core:jar:2.18.3")
+     *    .withExclusionPattern("*:byte-buddy-*").resolve();
+     * </code>
      * </pre>
-     * <p>
-     * Where each pattern segment is optional and supports full and partial <code>*</code> wildcards. An empty pattern
-     * segment is treated as an implicit wildcard. Version can be a range in case a {@link VersionScheme} is specified.
-     * </p>
-     * <p>
-     * For example, <code>org.eclipse.*</code> would match all artifacts whose group id started with
-     * <code>org.eclipse.</code> , and <code>:::*-SNAPSHOT</code> would match all snapshot artifacts.
      * </p>
      *
-     * @param pattern
-     * @return
+     * @return a new {@link IMvnResolverJob}.
      */
-    IMvnResolverJob withInclusionPattern(String pattern);
-
-    /**
-     * <p>
-     * Adds a simple filter to include artifacts from a list of patterns. The artifact pattern syntax is of the form:
-     *
-     * <pre>
-     * [groupId]:[artifactId]:[extension]:[version]
-     * </pre>
-     * <p>
-     * Where each pattern segment is optional and supports full and partial <code>*</code> wildcards. An empty pattern
-     * segment is treated as an implicit wildcard. Version can be a range in case a {@link VersionScheme} is specified.
-     * </p>
-     * <p>
-     * For example, <code>org.eclipse.*</code> would match all artifacts whose group id started with
-     * <code>org.eclipse.</code> , and <code>:::*-SNAPSHOT</code> would match all snapshot artifacts.
-     * </p>
-     *
-     * @param patterns
-     * @return
-     */
-    IMvnResolverJob withInclusionPattern(String... patterns);
+    IMvnResolverJob newMvnResolverJob();
 
     /**
      * <p>
      * </p>
      *
-     * @return
+     * @author Gerd W&uuml;therich (gerd.wuetherich@codekontor.io)
      */
-    File[] resolve();
+    interface IMvnResolverJob {
 
-    /**
-     * <p>
-     * </p>
-     *
-     * @return
-     */
-    URL[] resolveToUrlArray();
-  }
+        /**
+         * <p>
+         * </p>
+         *
+         * @param coord
+         * @return
+         */
+        IMvnResolverJob withDependency(String coord);
+
+        /**
+         * <p>
+         * </p>
+         *
+         * @param coords
+         * @return
+         */
+        IMvnResolverJob withDependencies(String... coords);
+
+        /**
+         * <p>
+         * </p>
+         *
+         * @param pattern
+         * @return
+         */
+        IMvnResolverJob withExclusionPattern(String pattern);
+
+        /**
+         * <p>
+         * </p>
+         *
+         * @param patterns
+         * @return
+         */
+        IMvnResolverJob withExclusionPatterns(String... patterns);
+
+        /**
+         * <p>
+         * Adds a simple filter to include artifacts. The artifact pattern syntax is of the form:
+         *
+         * <pre>
+         * [groupId]:[artifactId]:[extension]:[version]
+         * </pre>
+         * <p>
+         * Where each pattern segment is optional and supports full and partial <code>*</code> wildcards. An empty pattern
+         * segment is treated as an implicit wildcard. Version can be a range in case a {@link VersionScheme} is specified.
+         * </p>
+         * <p>
+         * For example, <code>org.eclipse.*</code> would match all artifacts whose group id started with
+         * <code>org.eclipse.</code> , and <code>:::*-SNAPSHOT</code> would match all snapshot artifacts.
+         * </p>
+         *
+         * @param pattern
+         * @return
+         */
+        IMvnResolverJob withInclusionPattern(String pattern);
+
+        /**
+         * <p>
+         * Adds a simple filter to include artifacts from a list of patterns. The artifact pattern syntax is of the form:
+         *
+         * <pre>
+         * [groupId]:[artifactId]:[extension]:[version]
+         * </pre>
+         * <p>
+         * Where each pattern segment is optional and supports full and partial <code>*</code> wildcards. An empty pattern
+         * segment is treated as an implicit wildcard. Version can be a range in case a {@link VersionScheme} is specified.
+         * </p>
+         * <p>
+         * For example, <code>org.eclipse.*</code> would match all artifacts whose group id started with
+         * <code>org.eclipse.</code> , and <code>:::*-SNAPSHOT</code> would match all snapshot artifacts.
+         * </p>
+         *
+         * @param patterns
+         * @return
+         */
+        IMvnResolverJob withInclusionPattern(String... patterns);
+
+        /**
+         * <p>
+         * Resolves the specified artifacts and returns the resulting files.
+         * </p>
+         *
+         * @return
+         */
+        File[] resolve();
+
+        /**
+         * <p>
+         * </p>
+         *
+         * @return
+         */
+        URL[] resolveToUrlArray();
+    }
 
 }

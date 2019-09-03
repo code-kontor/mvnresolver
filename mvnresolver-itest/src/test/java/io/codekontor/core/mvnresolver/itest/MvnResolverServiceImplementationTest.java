@@ -15,22 +15,27 @@
  */
 package io.codekontor.core.mvnresolver.itest;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import io.codekontor.mvnresolver.MvnResolverServiceFactoryFactory;
+import io.codekontor.mvnresolver.api.IMvnResolverService;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 
-import io.codekontor.mvnresolver.MvnResolverServiceFactoryFactory;
-import io.codekontor.mvnresolver.api.IMvnResolverService;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MvnResolverServiceImplementationTest {
 
-    @Test
-    public void testIt() {
+    private IMvnResolverService mvnResolverService;
 
-        //
-        IMvnResolverService mvnResolverService = MvnResolverServiceFactoryFactory
+    @Before
+    public void setup() {
+        mvnResolverService = MvnResolverServiceFactoryFactory
                 .createNewResolverServiceFactory().newMvnResolverService().create();
+    }
+
+    @Test
+    public void testResolve() {
 
         //
         File[] files = mvnResolverService.resolve("org.neo4j.test:neo4j-harness:2.3.3");
@@ -38,4 +43,15 @@ public class MvnResolverServiceImplementationTest {
         //
         assertThat(files).hasSize(74);
     }
+
+    @Test
+    public void testResolveArtifact() {
+
+        //
+        File file = mvnResolverService.resolveArtifact("org.neo4j.test:neo4j-harness:2.3.3");
+
+        //
+        assertThat(file).isNotNull();
+    }
+
 }

@@ -15,17 +15,52 @@
  */
 package io.codekontor.mvnresolver.api;
 
+/**
+ * <p>
+ * Encapsulates a maven coordinate (see https://maven.apache.org/pom.html#Maven_Coordinates).
+ * </p>
+ */
 public interface IMvnCoordinate {
 
-  String getGroupId();
+    /**
+     * Returns the 'groupId' of this maven coordinate.
+     *
+     * @return The 'groupId' of this maven coordinate.
+     */
+    String getGroupId();
 
-  String getArtifactId();
+    /**
+     * Returns the 'artifactId' of this maven coordinate.
+     *
+     * @return The 'artifactId' of this maven coordinate.
+     */
+    String getArtifactId();
 
-  String getPackagingType();
+    /**
+     * Returns the 'packagingType' of this maven coordinate.
+     *
+     * @return The 'packagingType' of this maven coordinate.
+     */
+    String getPackagingType();
 
-  String getClassifier();
+    /**
+     * Returns the 'classifier' of this maven coordinate.
+     *
+     * @return The 'classifier' of this maven coordinate.
+     */
+    String getClassifier();
 
-  String getVersion();
-  
-  String toCanonicalForm();
+    /**
+     * Returns the 'version' of this maven coordinate.
+     *
+     * @return The 'version' of this maven coordinate.
+     */
+    String getVersion();
+
+    /**
+     * Returns the string representation of this maven coordinate in it's canonical form.
+     *
+     * @return the string representation of this maven coordinate in it's canonical form.
+     */
+    String toCanonicalForm();
 }

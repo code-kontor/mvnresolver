@@ -15,41 +15,45 @@
  */
 package io.codekontor.mvnresolver.implementation;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
+import io.codekontor.mvnresolver.api.IMvnCoordinate;
+import io.codekontor.mvnresolver.api.IMvnResolverService;
 import org.jboss.shrinkwrap.resolver.api.maven.ConfigurableMavenResolverSystem;
+import org.jboss.shrinkwrap.resolver.api.maven.MavenFormatStage;
+import org.jboss.shrinkwrap.resolver.api.maven.MavenStrategyStage;
 import org.jboss.shrinkwrap.resolver.api.maven.ScopeType;
 import org.jboss.shrinkwrap.resolver.api.maven.coordinate.MavenCoordinates;
 import org.jboss.shrinkwrap.resolver.api.maven.coordinate.MavenDependencies;
 import org.jboss.shrinkwrap.resolver.api.maven.coordinate.MavenDependency;
 import org.jboss.shrinkwrap.resolver.api.maven.coordinate.MavenDependencyExclusion;
-import io.codekontor.mvnresolver.api.IMvnResolverService;
-import io.codekontor.mvnresolver.api.IMvnCoordinate;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * <p>
- * https://github.com/shrinkwrap/resolver
+ * A Shrinkwrap-Resolver based implementation (https://github.com/shrinkwrap/resolver) of the {@link IMvnResolverService} interface.
  * </p>
  *
  * @author Gerd W&uuml;therich (gerd.wuetherich@codekontor.io)
  */
 public class MvnResolverServiceImplementation implements IMvnResolverService {
 
+	// the resolver system
 	ConfigurableMavenResolverSystem _resolverSystem;
 
 	/**
-	 * <p>
-	 * </p>
 	 */
 	public void initialize(ConfigurableMavenResolverSystem resolverSystem) {
-
-		_resolverSystem = resolverSystem;
+		_resolverSystem = checkNotNull(resolverSystem);
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public IMvnResolverJob newMvnResolverJob() {
 		return new MvnResolverJobImplementation(this);
@@ -70,8 +74,18 @@ public class MvnResolverServiceImplementation implements IMvnResolverService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public File[] resolve(boolean transitive, String... coords) {
+		MavenStrategyStage mavenStrategyStage = _resolverSystem.resolve(checkNotNull(coords));
+		MavenFormatStage mavenFormatStage = transitive ? mavenStrategyStage.withTransitivity() : mavenStrategyStage.withoutTransitivity();
+		return mavenFormatStage.asFile();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public File[] resolve(String... coords) {
-		return _resolverSystem.resolve(checkNotNull(coords)).withTransitivity().asFile();
+		return resolve(true, coords);
 	}
 
 	/**
