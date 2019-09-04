@@ -9,7 +9,7 @@ script:
   -Dgpg.secretKeyring=$TRAVIS_BUILD_DIR/secring.gpg -P release -B --settings .travis/settings.xml
   clean deploy
 before_install:
-- ls -al ~/.gnupg/gpg.conf
+- export GPG_TTY=$(tty)
 - openssl aes-256-cbc -K $encrypted_a0f24da817c1_key -iv $encrypted_a0f24da817c1_iv
   -in .travis/signingskeys.tar.enc -out .travis/signingskeys.tar -d
 - tar xvf .travis/signingskeys.tar
