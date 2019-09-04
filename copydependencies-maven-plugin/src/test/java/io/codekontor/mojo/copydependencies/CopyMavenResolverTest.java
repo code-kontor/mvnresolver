@@ -39,7 +39,7 @@ public class CopyMavenResolverTest extends AbstractCopyDependencyTest {
   public void testCopyDependencyMojo() throws Exception {
 
     //
-    CopyDependenciesMojo mojo = (CopyDependenciesMojo) super.findCopyDependencyMojo("copyDependencies");
+    CopyDependenciesMojo mojo = (CopyDependenciesMojo) super.findCopyDependencyMojo();
     mojo.execute();
 
     List<File> copiedFiles = getCopiedFiles();

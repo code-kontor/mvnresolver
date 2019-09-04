@@ -18,10 +18,18 @@ package io.codekontor.mvnresolver;
 import io.codekontor.mvnresolver.api.IMvnResolverServiceFactory;
 import io.codekontor.mvnresolver.uber.UberServiceInvocationHandler;
 
+/**
+ *
+ */
 public class MvnResolverServiceFactoryFactory {
 
+  // The classes that can be loaded via the parent class loader
   public static final String[] ALLOWED_CLASSES = {"io\\.codekontor\\.mvnresolver\\.api\\..*", "com\\.google\\.common\\..*"};
-  
+
+  /**
+   *
+   * @return
+   */
   public static IMvnResolverServiceFactory createNewResolverServiceFactory() {
 
     return UberServiceInvocationHandler.createNewResolverService(IMvnResolverServiceFactory.class, (jcl) -> {

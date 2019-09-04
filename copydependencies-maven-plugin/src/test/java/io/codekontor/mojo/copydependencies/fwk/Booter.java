@@ -18,6 +18,7 @@ package io.codekontor.mojo.copydependencies.fwk;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
@@ -71,7 +72,7 @@ public class Booter
   public static List<RemoteRepository> newRepositories(RepositorySystem system,
       RepositorySystemSession session)
   {
-    return new ArrayList<RemoteRepository>(Arrays.asList(newCentralRepository()));
+    return new ArrayList<RemoteRepository>(Collections.singleton(newCentralRepository()));
   }
 
   /**

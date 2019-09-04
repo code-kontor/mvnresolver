@@ -59,6 +59,8 @@ public class MvnResolverServiceFactoryImplementation implements IMvnResolverServ
          */
         public MvnResolverServiceFactoryBuilderImplementation() {
             _resolverSystem = Resolvers.use(ConfigurableMavenResolverSystem.class);
+            withMavenCentralRepo();
+            withOffline(false);
         }
 
         /**
@@ -87,6 +89,15 @@ public class MvnResolverServiceFactoryImplementation implements IMvnResolverServ
             _resolverSystem.withMavenCentralRepo(withMavenCentralRepo);
             return this;
         }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public MvnResolverServiceFactoryBuilder withMavenCentralRepo() {
+            return withMavenCentralRepo(true);
+        }
+
 
         /**
          * {@inheritDoc}

@@ -39,7 +39,7 @@ public class CopyMavenResolverExcludeArtifactsTest extends AbstractCopyDependenc
   public void testCopyDependencyMojo() throws Exception {
 
     //
-    CopyDependenciesMojo mojo = (CopyDependenciesMojo) super.findCopyDependencyMojo("copyDependencies");
+    CopyDependenciesMojo mojo = (CopyDependenciesMojo) super.findCopyDependencyMojo();
     mojo.execute();
 
     //

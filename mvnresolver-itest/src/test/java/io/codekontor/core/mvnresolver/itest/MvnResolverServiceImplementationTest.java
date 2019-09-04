@@ -17,6 +17,7 @@ package io.codekontor.core.mvnresolver.itest;
 
 import io.codekontor.mvnresolver.MvnResolverServiceFactoryFactory;
 import io.codekontor.mvnresolver.api.IMvnResolverService;
+import io.codekontor.mvnresolver.api.IMvnResolverServiceFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,16 +27,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MvnResolverServiceImplementationTest {
 
-    private IMvnResolverService mvnResolverService;
+    private IMvnResolverServiceFactory mvnResolverServiceFactory;
 
     @Before
     public void setup() {
-        mvnResolverService = MvnResolverServiceFactoryFactory
-                .createNewResolverServiceFactory().newMvnResolverService().create();
+
+        // creating the MvnResolverServiceFactory
+        mvnResolverServiceFactory = MvnResolverServiceFactoryFactory
+                .createNewResolverServiceFactory();
+
+
     }
 
     @Test
     public void testResolve() {
+
+        // creating a new IMvnResolverService
+        IMvnResolverService mvnResolverService = mvnResolverServiceFactory.newMvnResolverService().withMavenCentralRepo(true).create();
 
         //
         File[] files = mvnResolverService.resolve("org.neo4j.test:neo4j-harness:2.3.3");
@@ -46,6 +54,9 @@ public class MvnResolverServiceImplementationTest {
 
     @Test
     public void testResolveArtifact() {
+
+        // creating a new IMvnResolverService
+        IMvnResolverService mvnResolverService = mvnResolverServiceFactory.newMvnResolverService().withMavenCentralRepo(true).create();
 
         //
         File file = mvnResolverService.resolveArtifact("org.neo4j.test:neo4j-harness:2.3.3");

@@ -81,6 +81,15 @@ public interface IMvnResolverServiceFactory {
 
         /**
          * <p>
+         * Configures the {@link MvnResolverServiceFactoryBuilder} with the maven central repository.
+         * </p>
+         *
+         * @return the current MvnResolverServiceFactoryBuilder
+         */
+        MvnResolverServiceFactoryBuilder withMavenCentralRepo();
+
+        /**
+         * <p>
          * Configures the {@link MvnResolverServiceFactoryBuilder} to work offline.
          * </p>
          *

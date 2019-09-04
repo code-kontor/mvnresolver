@@ -40,6 +40,10 @@ import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResult;
 
 /**
+ * <p>
+ * Helper mojo that copies all specified maven artifacts to the target location folder.
+ * </p>
+ *
  * @author Gerd W&uuml;therich (gerd.wuetherich@codekontor.io)
  */
 @Mojo(name = "copyDependencies", defaultPhase = LifecyclePhase.PREPARE_PACKAGE)
@@ -51,7 +55,9 @@ public class CopyDependenciesMojo extends AbstractMojo {
   @Component
   private RepositorySystem        repoSystem;
 
-  /** - */
+  /**
+   * The current maven project
+   */
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
   private MavenProject            project;
 
@@ -68,43 +74,57 @@ public class CopyDependenciesMojo extends AbstractMojo {
   private List<RemoteRepository>  remoteRepos;
 
   /**
-   * * The target directory
+   * The target directory
    */
   @Parameter(defaultValue = "${project.build.directory}/libs", property = "targetDir", required = true)
   private String                  targetDirectory;
 
   /**
-   *
+   * The coordinates of the maven artifacts to copy.
    */
   @Parameter(property = "coords", required = true)
   private List<String>            coords;
 
+  /**
+   * The (comma-separated) list of group ids to exclude.
+   */
   @Parameter(property = "excludeGroupIds", required = false)
   private String                  excludeGroupIds;
 
+  /**
+   * The (comma-separated) list of artifact ids to exclude.
+   */
   @Parameter(property = "excludeArtifactIds", required = false)
   private String                  excludeArtifactIds;
 
+  // the resolved list of group is to exclude
   private List<String>            excludeGroupIdsList    = Collections.emptyList();
 
+  // the resolved list of artifact is to exclude
   private List<String>            excludeArtifactIdsList = Collections.emptyList();
 
   /**
-   * @return
+   * Returns the {@link RepositorySystem}.
+   *
+   * @return the {@link RepositorySystem}
    */
   public RepositorySystem getRepoSystem() {
     return repoSystem;
   }
 
   /**
-   * @return
+   * Returns the {@link RepositorySystemSession}.
+   *
+   * @return the {@link RepositorySystemSession}
    */
   public RepositorySystemSession getRepoSession() {
     return repoSession;
   }
 
   /**
-   * @return
+   * Returns the list of {@link RemoteRepository RemoteRepositories}.
+   *
+   * @return the list of {@link RemoteRepository RemoteRepositories}
    */
   public List<RemoteRepository> getRemoteRepos() {
     return remoteRepos;
@@ -117,25 +137,21 @@ public class CopyDependenciesMojo extends AbstractMojo {
 
     try {
 
-      //
       if (excludeGroupIds != null) {
         excludeGroupIdsList = Arrays.stream(excludeGroupIds.split(",")).map(r -> r.trim()).collect(Collectors.toList());
       }
 
-      //
       if (excludeArtifactIds != null) {
         excludeArtifactIdsList = Arrays.stream(excludeArtifactIds.split(",")).map(r -> r.trim())
             .collect(Collectors.toList());
       }
 
-      //
       CollectRequest collectRequest = new CollectRequest();
 
-      //
-      for (String coord : coords) {
+      for (String coordinate: coords) {
 
         // create the dependency...
-        Dependency dependency = new Dependency(new DefaultArtifact(coord), "compile");
+        Dependency dependency = new Dependency(new DefaultArtifact(coordinate), "compile");
 
         // ..and add it to the request
         collectRequest.addDependency(dependency);
@@ -145,7 +161,6 @@ public class CopyDependenciesMojo extends AbstractMojo {
         collectRequest.addRepository(remoteRepository);
       }
 
-      //
       DependencyRequest dependencyRequest = new DependencyRequest();
       dependencyRequest.setCollectRequest(collectRequest);
       DependencyResult result = repoSystem.resolveDependencies(repoSession, dependencyRequest);
@@ -153,14 +168,11 @@ public class CopyDependenciesMojo extends AbstractMojo {
       // the targetDirectory
       File targetDirectoryAsFile = new File(project.getBasedir(), targetDirectory);
 
-      //
       for (ArtifactResult artifactResult : result.getArtifactResults()) {
 
-        //
         if (!excludeGroupIdsList.contains(artifactResult.getArtifact().getGroupId())
             && !excludeArtifactIdsList.contains(artifactResult.getArtifact().getArtifactId())) {
 
-          //
           FileUtils.copyFile(artifactResult.getArtifact().getFile(),
               new File(targetDirectoryAsFile, artifactResult.getArtifact().getFile().getName()));
         }

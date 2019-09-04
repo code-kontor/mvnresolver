@@ -74,11 +74,10 @@ public abstract class AbstractCopyDependencyTest {
    * <p>
    * </p>
    *
-   * @param goalName
    * @return
    * @throws Exception
    */
-  protected CopyDependenciesMojo findCopyDependencyMojo(String goalName) throws Exception {
+  protected CopyDependenciesMojo findCopyDependencyMojo() throws Exception {
 
     // Find the project
     File baseDir = this.resources.getBasedir(_projectName);
@@ -86,7 +85,7 @@ public abstract class AbstractCopyDependencyTest {
     Assert.assertTrue(baseDir.isDirectory());
 
     File pom = new File(baseDir, "pom.xml");
-    CopyDependenciesMojo mojo = (CopyDependenciesMojo) this.rule.lookupMojo(goalName, pom);
+    CopyDependenciesMojo mojo = (CopyDependenciesMojo) this.rule.lookupMojo("copyDependencies", pom);
     Assert.assertNotNull(mojo);
 
     // Create the Maven project by hand (...)
