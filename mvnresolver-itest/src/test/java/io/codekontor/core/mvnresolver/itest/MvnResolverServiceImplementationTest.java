@@ -18,7 +18,8 @@ package io.codekontor.core.mvnresolver.itest;
 import io.codekontor.mvnresolver.MvnResolverServiceFactoryFactory;
 import io.codekontor.mvnresolver.api.IMvnResolverService;
 import io.codekontor.mvnresolver.api.IMvnResolverServiceFactory;
-import org.junit.Before;
+import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -27,15 +28,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MvnResolverServiceImplementationTest {
 
-    private IMvnResolverServiceFactory mvnResolverServiceFactory;
+    private static IMvnResolverServiceFactory mvnResolverServiceFactory;
 
-    @Before
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
 
-        // creating the MvnResolverServiceFactory
-        mvnResolverServiceFactory = MvnResolverServiceFactoryFactory
-                .createNewResolverServiceFactory();
+        try {
 
+            // creating the MvnResolverServiceFactory
+            mvnResolverServiceFactory = MvnResolverServiceFactoryFactory
+                    .createNewResolverServiceFactory();
+            mvnResolverServiceFactory.newMvnResolverService();
+
+        } catch (Exception e) {
+            System.out.println("**************************");
+            System.out.println("Don't run from within the IDE.");
+            Assert.fail("as");
+        }
 
     }
 
@@ -53,6 +62,32 @@ public class MvnResolverServiceImplementationTest {
     }
 
     @Test
+    public void testResolveTransitive() {
+
+        // creating a new IMvnResolverService
+        IMvnResolverService mvnResolverService = mvnResolverServiceFactory.newMvnResolverService().withMavenCentralRepo(true).create();
+
+        //
+        File[] files = mvnResolverService.resolve(true, "org.neo4j.test:neo4j-harness:2.3.3");
+
+        //
+        assertThat(files).hasSize(74);
+    }
+
+    @Test
+    public void testResolveNonTransitive() {
+
+        // creating a new IMvnResolverService
+        IMvnResolverService mvnResolverService = mvnResolverServiceFactory.newMvnResolverService().withMavenCentralRepo(true).create();
+
+        //
+        File[] files = mvnResolverService.resolve(false, "org.neo4j.test:neo4j-harness:2.3.3");
+
+        //
+        assertThat(files).hasSize(1);
+    }
+
+    @Test
     public void testResolveArtifact() {
 
         // creating a new IMvnResolverService
@@ -65,4 +100,23 @@ public class MvnResolverServiceImplementationTest {
         assertThat(file).isNotNull();
     }
 
+    @Test
+    public void testResolveJob() {
+
+        // creating a new IMvnResolverService
+        IMvnResolverService mvnResolverService = mvnResolverServiceFactory.newMvnResolverService().withMavenCentralRepo(true).create();
+
+        //
+        File[] files = mvnResolverService.newMvnResolverJob()
+                .withDependency("org.neo4j.test:neo4j-harness:2.3.3")
+                .resolve();
+
+        //
+        assertThat(files).isNotNull();
+        assertThat(files).hasSize(74);
+
+        for (int i = 0; i < files.length; i++) {
+            System.out.println(files[i].getAbsolutePath());
+        }
+    }
 }

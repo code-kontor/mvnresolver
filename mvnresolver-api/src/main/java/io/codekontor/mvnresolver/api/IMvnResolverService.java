@@ -101,6 +101,61 @@ public interface IMvnResolverService {
 
     /**
      * <p>
+     * Encapsulates a maven coordinate (see https://maven.apache.org/pom.html#Maven_Coordinates).
+     * </p>
+     */
+    public interface IMvnCoordinate {
+
+        /**
+         * Returns the 'groupId' of this maven coordinate.
+         *
+         * @return The 'groupId' of this maven coordinate.
+         */
+        String getGroupId();
+
+        /**
+         * Returns the 'artifactId' of this maven coordinate.
+         *
+         * @return The 'artifactId' of this maven coordinate.
+         */
+        String getArtifactId();
+
+        /**
+         * Returns the 'packagingType' of this maven coordinate.
+         *
+         * @return The 'packagingType' of this maven coordinate.
+         */
+        String getPackagingType();
+
+        /**
+         * Returns the 'classifier' of this maven coordinate.
+         *
+         * @return The 'classifier' of this maven coordinate.
+         */
+        String getClassifier();
+
+        /**
+         * Returns the 'version' of this maven coordinate.
+         *
+         * @return The 'version' of this maven coordinate.
+         */
+        String getVersion();
+
+        /**
+         * Returns the string representation of this maven coordinate in it's canonical form.
+         *
+         * @return the string representation of this maven coordinate in it's canonical form.
+         */
+        String toCanonicalForm();
+    }
+
+    enum Scope {
+        COMPILE, PROVIDED, RUNTIME, TEST, SYSTEM, IMPORT
+    }
+
+
+        /**
+     * <p>
      * </p>
      *
      * @author Gerd W&uuml;therich (gerd.wuetherich@codekontor.io)
@@ -111,79 +166,10 @@ public interface IMvnResolverService {
          * <p>
          * </p>
          *
-         * @param coord
+         * @param coordinate
          * @return
          */
-        IMvnResolverJob withDependency(String coord);
-
-        /**
-         * <p>
-         * </p>
-         *
-         * @param coords
-         * @return
-         */
-        IMvnResolverJob withDependencies(String... coords);
-
-        /**
-         * <p>
-         * </p>
-         *
-         * @param pattern
-         * @return
-         */
-        IMvnResolverJob withExclusionPattern(String pattern);
-
-        /**
-         * <p>
-         * </p>
-         *
-         * @param patterns
-         * @return
-         */
-        IMvnResolverJob withExclusionPatterns(String... patterns);
-
-        /**
-         * <p>
-         * Adds a simple filter to include artifacts. The artifact pattern syntax is of the form:
-         *
-         * <pre>
-         * [groupId]:[artifactId]:[extension]:[version]
-         * </pre>
-         * <p>
-         * Where each pattern segment is optional and supports full and partial <code>*</code> wildcards. An empty pattern
-         * segment is treated as an implicit wildcard. Version can be a range in case a {@link VersionScheme} is specified.
-         * </p>
-         * <p>
-         * For example, <code>org.eclipse.*</code> would match all artifacts whose group id started with
-         * <code>org.eclipse.</code> , and <code>:::*-SNAPSHOT</code> would match all snapshot artifacts.
-         * </p>
-         *
-         * @param pattern
-         * @return
-         */
-        IMvnResolverJob withInclusionPattern(String pattern);
-
-        /**
-         * <p>
-         * Adds a simple filter to include artifacts from a list of patterns. The artifact pattern syntax is of the form:
-         *
-         * <pre>
-         * [groupId]:[artifactId]:[extension]:[version]
-         * </pre>
-         * <p>
-         * Where each pattern segment is optional and supports full and partial <code>*</code> wildcards. An empty pattern
-         * segment is treated as an implicit wildcard. Version can be a range in case a {@link VersionScheme} is specified.
-         * </p>
-         * <p>
-         * For example, <code>org.eclipse.*</code> would match all artifacts whose group id started with
-         * <code>org.eclipse.</code> , and <code>:::*-SNAPSHOT</code> would match all snapshot artifacts.
-         * </p>
-         *
-         * @param patterns
-         * @return
-         */
-        IMvnResolverJob withInclusionPattern(String... patterns);
+        IMvnResolverJobDependency withDependency(String coordinate);
 
         /**
          * <p>
@@ -203,4 +189,30 @@ public interface IMvnResolverService {
         URL[] resolveToUrlArray();
     }
 
+    interface IMvnResolverJobDependency extends IMvnResolverJob{
+
+        IMvnResolverJobDependency withExclusionPattern(String pattern);
+
+        /**
+         * <p>
+         * </p>
+         *
+         * @param patterns
+         * @return
+         */
+        IMvnResolverJobDependency withExclusionPatterns(String... patterns);
+
+        /**
+         *
+         * @return
+         */
+        IMvnResolverJobDependency withOptional(boolean isOptional);
+
+        /**
+         *
+         * @param scope
+         * @return
+         */
+        IMvnResolverJobDependency withScope(Scope scope);
+    }
 }

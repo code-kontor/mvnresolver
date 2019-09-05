@@ -15,7 +15,6 @@
  */
 package io.codekontor.mvnresolver.implementation;
 
-import io.codekontor.mvnresolver.api.IMvnCoordinate;
 import io.codekontor.mvnresolver.api.IMvnResolverService;
 import org.jboss.shrinkwrap.resolver.api.maven.ConfigurableMavenResolverSystem;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenFormatStage;
@@ -41,85 +40,89 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class MvnResolverServiceImplementation implements IMvnResolverService {
 
-	// the resolver system
-	ConfigurableMavenResolverSystem _resolverSystem;
+    // the resolver system
+    ConfigurableMavenResolverSystem _resolverSystem;
 
-	/**
-	 */
-	public void initialize(ConfigurableMavenResolverSystem resolverSystem) {
-		_resolverSystem = checkNotNull(resolverSystem);
-	}
+    /**
+     *
+     */
+    public void initialize(ConfigurableMavenResolverSystem resolverSystem) {
+        _resolverSystem = checkNotNull(resolverSystem);
+    }
 
-	/**
-	 *
-	 * @return
-	 */
-	@Override
-	public IMvnResolverJob newMvnResolverJob() {
-		return new MvnResolverJobImplementation(this);
-	}
+    /**
+     * @return
+     */
+    @Override
+    public IMvnResolverJob newMvnResolverJob() {
+        return new MvnResolverJobImplementation(this);
+    }
 
-	/**
-	 *
-	 * @param coordinate
-	 * @return
-	 */
-	@Override
-	public IMvnCoordinate parseCoordinate(String coordinate) {
-		return new MvnCoordinateImplementation(MavenCoordinates.createCoordinate(coordinate));
-	}
+    /**
+     * @param coordinate
+     * @return
+     */
+    @Override
+    public IMvnCoordinate parseCoordinate(String coordinate) {
+        return new MvnCoordinateImplementation(MavenCoordinates.createCoordinate(coordinate));
+    }
 
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public File[] resolve(boolean transitive, String... coords) {
-		MavenStrategyStage mavenStrategyStage = _resolverSystem.resolve(checkNotNull(coords));
-		MavenFormatStage mavenFormatStage = transitive ? mavenStrategyStage.withTransitivity() : mavenStrategyStage.withoutTransitivity();
-		return mavenFormatStage.asFile();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public File[] resolve(boolean transitive, String... coords) {
+        MavenStrategyStage mavenStrategyStage = _resolverSystem.resolve(checkNotNull(coords));
+        MavenFormatStage mavenFormatStage = transitive ? mavenStrategyStage.withTransitivity() : mavenStrategyStage.withoutTransitivity();
+        return mavenFormatStage.asFile();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public File[] resolve(String... coords) {
-		return resolve(true, coords);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public File[] resolve(String... coords) {
+        return resolve(true, coords);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public File resolveArtifact(String canonicalForm) {
-		return _resolverSystem.resolve(checkNotNull(canonicalForm)).withoutTransitivity().asSingleFile();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public File resolveArtifact(String canonicalForm) {
+        return _resolverSystem.resolve(checkNotNull(canonicalForm)).withoutTransitivity().asSingleFile();
+    }
 
-	/**
-	 * <p>
-	 * </p>
-	 *
-	 * @param job
-	 * @return
-	 */
-	File[] resolve(MvnResolverJobImplementation job) {
+    /**
+     * <p>
+     * </p>
+     *
+     * @param job
+     * @return
+     */
+    File[] resolve(MvnResolverJobImplementation job) {
 
-		//
-		List<MavenDependency> dependencies = new ArrayList<>();
-		List<MavenDependencyExclusion> exclusions = new ArrayList<>();
-		
-		for (String exclusionPattern : job.getExclusionPatterns()) {
-			exclusions.add(MavenDependencies.createExclusion(exclusionPattern));
-		}
-		
-		for (String coord : job.getCoords()) {
-			MavenDependency mavenDependency = MavenDependencies.createDependency(coord, ScopeType.COMPILE, false,exclusions.toArray(new MavenDependencyExclusion[0]));
-			dependencies.add(mavenDependency);
-		}
-		
-		return _resolverSystem
-		  .addDependencies(dependencies).resolve().withTransitivity().asFile();
+        //
+        List<MavenDependency> dependencies = new ArrayList<>();
 
-	}
+
+        for (MvnResolverJobDependency dependency : job.dependencies()) {
+
+            MavenDependencyExclusion[] exclusions =
+                    dependency.exclusionPatterns().stream().map(p -> MavenDependencies.createExclusion(p)).toArray(MavenDependencyExclusion[]::new);
+
+            ScopeType scopeType = ScopeType.valueOf(dependency.scope().name());
+
+            dependencies.add(MavenDependencies.createDependency(
+                    dependency.coordinate(),
+                    scopeType,
+                    dependency.optional(),
+                    exclusions));
+        }
+
+        return _resolverSystem
+                .addDependencies(dependencies).resolve().withTransitivity().asFile();
+
+    }
 }

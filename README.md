@@ -1,10 +1,10 @@
-# MvnResolver - Resolve Maven Artifacts from within Java Applications
+# MvnResolver Uber-jar
 
 Version 1.0.0.RC1 - 2019-09-03
 
 The MvnResolver project aims at providing an easy to use, non-invasive solution to resolve maven artifacts 
 from within java applications. Simply add the MvnResolver uber-jar to your project's classpath - all required libraries 
-are embedded within the MvnResolver Uber jar, so no additional dependencies are added.
+are embedded within the MvnResolver Uber jar, so no additional dependencies are added to your project.
 
 The uber-Jar internally relies on shrinkwrap-resolver.
 
@@ -47,9 +47,21 @@ IMvnResolverService mvnResolverService = mvnResolverServiceFactory.newMvnResolve
 
 ### Resolving artifacts
 
+```java
+//
+File[] files = mvnResolverService.resolve("org.neo4j.test:neo4j-harness:2.3.3");
+```
 
+```java
+//
+File[] files = mvnResolverService.resolve(false, "org.neo4j.test:neo4j-harness:2.3.3");
+```
 
+```java
+//
+File file = mvnResolverService.resolveArtifact("org.neo4j.test:neo4j-harness:2.3.3");
+```
 
 #### License
 
-ModiTect is licensed under the Apache License version 2.0.
+MvnResolver is licensed under the Apache License version 2.0.

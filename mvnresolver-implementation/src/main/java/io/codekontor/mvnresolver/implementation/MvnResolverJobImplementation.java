@@ -36,6 +36,7 @@
  */
 package io.codekontor.mvnresolver.implementation;
 
+import io.codekontor.mvnresolver.api.IMvnResolverService;
 import io.codekontor.mvnresolver.api.IMvnResolverService.IMvnResolverJob;
 
 import java.io.File;
@@ -50,59 +51,16 @@ class MvnResolverJobImplementation implements IMvnResolverJob {
 
   private MvnResolverServiceImplementation _service;
 
-  private List<String>                     _coords;
-
-  private List<String>                     _exclusionPatterns;
-
-  private List<String>                     _inclusionPatterns;
+  private List<MvnResolverJobDependency>                     _dependencies;
 
   public MvnResolverJobImplementation(MvnResolverServiceImplementation service) {
     this._service = checkNotNull(service);
-    this._coords = new ArrayList<>();
-    this._exclusionPatterns = new ArrayList<>();
-    this._inclusionPatterns = new ArrayList<>();
+    this._dependencies = new ArrayList<>();
   }
 
   @Override
-  public IMvnResolverJob withDependency(String coordinate) {
-    this._coords.add(checkNotNull(coordinate));
-    return this;
-  }
-
-  @Override
-  public IMvnResolverJob withDependencies(String... coords) {
-    for (String coord : checkNotNull(coords)) {
-      this._coords.add(coord);
-    }
-    return this;
-  }
-
-  @Override
-  public IMvnResolverJob withExclusionPattern(String pattern) {
-    this._exclusionPatterns.add(checkNotNull(pattern));
-    return this;
-  }
-
-  @Override
-  public IMvnResolverJob withExclusionPatterns(String... patterns) {
-    for (String pattern : checkNotNull(patterns)) {
-      this._exclusionPatterns.add(pattern);
-    }
-    return this;
-  }
-
-  @Override
-  public IMvnResolverJob withInclusionPattern(String pattern) {
-    this._inclusionPatterns.add(checkNotNull(pattern));
-    return this;
-  }
-
-  @Override
-  public IMvnResolverJob withInclusionPattern(String... patterns) {
-    for (String pattern : checkNotNull(patterns)) {
-      this._inclusionPatterns.add(pattern);
-    }
-    return this;
+  public IMvnResolverService.IMvnResolverJobDependency withDependency(String coordinate) {
+    return new MvnResolverJobDependency(this, coordinate);
   }
 
   @Override
@@ -130,16 +88,7 @@ class MvnResolverJobImplementation implements IMvnResolverJob {
     return urls.toArray(new URL[0]);
   }
 
-  List<String> getCoords() {
-    return this._coords;
+  List<MvnResolverJobDependency> dependencies() {
+    return _dependencies;
   }
-
-  List<String> getExclusionPatterns() {
-    return this._exclusionPatterns;
-  }
-
-  List<String> getInclusionPatterns() {
-    return this._inclusionPatterns;
-  }
-
 }

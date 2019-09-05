@@ -15,12 +15,13 @@
  */
 package io.codekontor.mvnresolver.implementation;
 
-import io.codekontor.mvnresolver.api.IMvnCoordinate;
+
+import io.codekontor.mvnresolver.api.IMvnResolverService;
 import org.jboss.shrinkwrap.resolver.api.maven.coordinate.MavenCoordinate;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class MvnCoordinateImplementation implements IMvnCoordinate {
+public class MvnCoordinateImplementation implements IMvnResolverService.IMvnCoordinate {
 
   private MavenCoordinate _mavenCoordinate;
 

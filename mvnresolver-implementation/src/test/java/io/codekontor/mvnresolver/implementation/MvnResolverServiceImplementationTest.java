@@ -15,7 +15,6 @@
  */
 package io.codekontor.mvnresolver.implementation;
 
-import io.codekontor.mvnresolver.api.IMvnCoordinate;
 import io.codekontor.mvnresolver.api.IMvnResolverService;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,14 +48,13 @@ public class MvnResolverServiceImplementationTest {
     this._mvnResolverService = new MvnResolverServiceFactoryImplementation().newMvnResolverService().create();
   }
 
-
   /**
    *
    */
   @Test
   public void test_MvnCoordinates() {
 
-    IMvnCoordinate mvnCoordinate = this._mvnResolverService.parseCoordinate("org.neo4j.test:neo4j-harness:2.3.3");
+    IMvnResolverService.IMvnCoordinate mvnCoordinate = this._mvnResolverService.parseCoordinate("org.neo4j.test:neo4j-harness:2.3.3");
 
     assertThat(mvnCoordinate.getGroupId()).isEqualTo("org.neo4j.test");
     assertThat(mvnCoordinate.getArtifactId()).isEqualTo("neo4j-harness");
@@ -174,7 +172,10 @@ public class MvnResolverServiceImplementationTest {
 
     //
     File[] files = this._mvnResolverService.newMvnResolverJob()
-        .withDependencies("net.bytebuddy:byte-buddy:jar:1.8.5", "org.mockito:mockito-core:jar:2.18.3").resolve();
+        .withDependency("net.bytebuddy:byte-buddy:jar:1.8.5")
+        .withDependency("org.mockito:mockito-core:jar:2.18.3")
+        .resolve();
+
     List<String> names = Arrays.asList(files).stream().map(file -> file.getName()).collect(Collectors.toList());
 
     //
@@ -190,8 +191,10 @@ public class MvnResolverServiceImplementationTest {
 
     //
     File[] files = this._mvnResolverService.newMvnResolverJob()
-        .withDependencies("net.bytebuddy:byte-buddy:jar:1.8.5", "org.mockito:mockito-core:jar:2.18.3")
-        .withExclusionPattern("net.bytebuddy:byte-buddy-agent").resolve();
+        .withDependency("org.mockito:mockito-core:jar:2.18.3")
+            .withExclusionPattern("*:byte-buddy-agent")
+            .resolve();
+
     List<String> names = Arrays.asList(files).stream().map(file -> file.getName()).collect(Collectors.toList());
 
     //
