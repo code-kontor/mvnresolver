@@ -26,31 +26,15 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * <p>
- * </p>
- *
- * @author Gerd W&uuml;therich (gerd.wuetherich@codekontor.io)
- */
 public class MvnResolverServiceImplementationTest {
 
-  /** - */
   private IMvnResolverService _mvnResolverService;
 
-  /**
-   * <p>
-   * </p>
-   */
   @Before
   public void init() {
-
-    // create the resolver service
     this._mvnResolverService = new MvnResolverServiceFactoryImplementation().newMvnResolverService().create();
   }
 
-  /**
-   *
-   */
   @Test
   public void test_MvnCoordinates() {
 
@@ -61,18 +45,12 @@ public class MvnResolverServiceImplementationTest {
     assertThat(mvnCoordinate.getVersion()).isEqualTo("2.3.3");
   }
 
-  /**
-   * <p>
-   * </p>
-   */
   @Test
   public void test_resolve() {
 
-    //
     File[] files = this._mvnResolverService.resolve("org.neo4j.test:neo4j-harness:2.3.3");
     List<String> names = Arrays.asList(files).stream().map(file -> file.getName()).collect(Collectors.toList());
 
-    //
     assertThat(files).hasSize(74);
     assertThat(names).contains("neo4j-harness-2.3.3.jar");
     assertThat(names).contains("neo4j-2.3.3.jar");
@@ -151,26 +129,22 @@ public class MvnResolverServiceImplementationTest {
   }
 
   @Test
-  public void test_2() {
+  public void test_resolve2() {
 
-    //
     File[] files = this._mvnResolverService.resolve("net.bytebuddy:byte-buddy:jar:1.8.5",
         "org.mockito:mockito-core:jar:2.18.3");
     List<String> names = Arrays.asList(files).stream().map(file -> file.getName()).collect(Collectors.toList());
 
-    //
     assertThat(names).hasSize(4);
     assertThat(names).contains("byte-buddy-1.8.5.jar");
     assertThat(names).contains("mockito-core-2.18.3.jar");
     assertThat(names).contains("byte-buddy-agent-1.8.5.jar");
     assertThat(names).contains("objenesis-2.6.jar");
-
   }
 
   @Test
-  public void test_3() {
+  public void test_ResolverJob() {
 
-    //
     File[] files = this._mvnResolverService.newMvnResolverJob()
         .withDependency("net.bytebuddy:byte-buddy:jar:1.8.5")
         .withDependency("org.mockito:mockito-core:jar:2.18.3")
@@ -178,7 +152,6 @@ public class MvnResolverServiceImplementationTest {
 
     List<String> names = Arrays.asList(files).stream().map(file -> file.getName()).collect(Collectors.toList());
 
-    //
     assertThat(names).hasSize(4);
     assertThat(names).contains("byte-buddy-1.8.5.jar");
     assertThat(names).contains("mockito-core-2.18.3.jar");
@@ -187,21 +160,18 @@ public class MvnResolverServiceImplementationTest {
   }
 
   @Test
-  public void test_4() {
+  public void test_ResolverJobExclusion() {
 
-    //
     File[] files = this._mvnResolverService.newMvnResolverJob()
-        .withDependency("org.mockito:mockito-core:jar:2.18.3")
+            .withDependency("org.mockito:mockito-core:jar:2.18.3")
             .withExclusionPattern("*:byte-buddy-agent")
             .resolve();
 
     List<String> names = Arrays.asList(files).stream().map(file -> file.getName()).collect(Collectors.toList());
 
-    //
     assertThat(names).hasSize(3);
     assertThat(names).contains("byte-buddy-1.8.5.jar");
     assertThat(names).contains("mockito-core-2.18.3.jar");
     assertThat(names).contains("objenesis-2.6.jar");
-
   }
 }

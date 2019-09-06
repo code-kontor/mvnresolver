@@ -40,32 +40,16 @@ public class MvnResolverServiceFactoryImplementation implements IMvnResolverServ
         }
     }
 
-    /**
-     * <p>
-     * </p>
-     *
-     * @author Gerd W&uuml;therich (gerd.wuetherich@codekontor.io)
-     */
     public static class MvnResolverServiceFactoryBuilderImplementation implements MvnResolverServiceFactoryBuilder {
 
-        /** - */
         private ConfigurableMavenResolverSystem _resolverSystem;
 
-        /**
-         * <p>
-         * Creates a new instance of type
-         * {@link MvnResolverServiceFactoryBuilderImplementation}.
-         * </p>
-         */
         public MvnResolverServiceFactoryBuilderImplementation() {
             _resolverSystem = Resolvers.use(ConfigurableMavenResolverSystem.class);
             withMavenCentralRepo();
             withOffline(false);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public MvnResolverServiceFactoryBuilder withRemoteRepository(String id, String url, String layout) {
             MavenRemoteRepository mavenRemoteRepository = MavenRemoteRepositories.createRemoteRepository(id, url, layout);
@@ -73,71 +57,47 @@ public class MvnResolverServiceFactoryImplementation implements IMvnResolverServ
             return this;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public MvnResolverServiceFactoryBuilder withRemoteRepository(String id, String url) {
             return withRemoteRepository(id, url, "default");
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public MvnResolverServiceFactoryBuilder withMavenCentralRepo(boolean withMavenCentralRepo) {
             _resolverSystem.withMavenCentralRepo(withMavenCentralRepo);
             return this;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public MvnResolverServiceFactoryBuilder withMavenCentralRepo() {
             return withMavenCentralRepo(true);
         }
 
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public MvnResolverServiceFactoryBuilder withOffline(boolean b) {
             _resolverSystem.workOffline(b);
             return this;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public MvnResolverServiceFactoryBuilder withOffline() {
             _resolverSystem.workOffline();
             return this;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public MvnResolverServiceFactoryBuilder withSettingsFile(File file) throws IllegalArgumentException, InvalidConfigurationFileException {
             _resolverSystem.fromFile(file);
             return this;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public MvnResolverServiceFactoryBuilder withSettingsFile(String s) throws IllegalArgumentException, InvalidConfigurationFileException {
             _resolverSystem.fromFile(s);
             return this;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public IMvnResolverService create() {
             MvnResolverServiceImplementation serviceImplementation = new MvnResolverServiceImplementation();

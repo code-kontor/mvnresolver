@@ -1,12 +1,12 @@
 /**
  * Copyright © 2019 Code-Kontor GmbH and others (slizaa@codekontor.io)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,44 +33,30 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * <p>
- * A Shrinkwrap-Resolver based implementation (https://github.com/shrinkwrap/resolver) of the {@link IMvnResolverService} interface.
+ * A Shrinkwrap-Resolver based implementation (https://github.com/shrinkwrap/resolver)
+ * of the {@link IMvnResolverService} interface.
  * </p>
  *
  * @author Gerd W&uuml;therich (gerd.wuetherich@codekontor.io)
  */
 public class MvnResolverServiceImplementation implements IMvnResolverService {
 
-    // the resolver system
     ConfigurableMavenResolverSystem _resolverSystem;
 
-    /**
-     *
-     */
     public void initialize(ConfigurableMavenResolverSystem resolverSystem) {
         _resolverSystem = checkNotNull(resolverSystem);
     }
 
-    /**
-     * @return
-     */
     @Override
     public IMvnResolverJob newMvnResolverJob() {
         return new MvnResolverJobImplementation(this);
     }
 
-    /**
-     * @param coordinate
-     * @return
-     */
     @Override
     public IMvnCoordinate parseCoordinate(String coordinate) {
         return new MvnCoordinateImplementation(MavenCoordinates.createCoordinate(coordinate));
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public File[] resolve(boolean transitive, String... coords) {
         MavenStrategyStage mavenStrategyStage = _resolverSystem.resolve(checkNotNull(coords));
@@ -78,32 +64,18 @@ public class MvnResolverServiceImplementation implements IMvnResolverService {
         return mavenFormatStage.asFile();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public File[] resolve(String... coords) {
         return resolve(true, coords);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public File resolveArtifact(String canonicalForm) {
         return _resolverSystem.resolve(checkNotNull(canonicalForm)).withoutTransitivity().asSingleFile();
     }
 
-    /**
-     * <p>
-     * </p>
-     *
-     * @param job
-     * @return
-     */
     File[] resolve(MvnResolverJobImplementation job) {
 
-        //
         List<MavenDependency> dependencies = new ArrayList<>();
 
 
@@ -123,6 +95,5 @@ public class MvnResolverServiceImplementation implements IMvnResolverService {
 
         return _resolverSystem
                 .addDependencies(dependencies).resolve().withTransitivity().asFile();
-
     }
 }

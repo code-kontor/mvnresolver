@@ -73,18 +73,15 @@ class MvnResolverJobImplementation implements IMvnResolverJob {
 
     File[] files = resolve();
 
-    //
     List<URL> urls = new ArrayList<>(files.length);
     for (File file : files) {
       try {
         urls.add(file.toURI().toURL());
       } catch (MalformedURLException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        throw new RuntimeException("MalformedURLException: " + e.getMessage(), e);
       }
     }
 
-    //
     return urls.toArray(new URL[0]);
   }
 

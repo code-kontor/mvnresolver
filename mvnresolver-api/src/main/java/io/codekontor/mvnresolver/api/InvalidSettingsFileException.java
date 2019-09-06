@@ -16,12 +16,17 @@
 package io.codekontor.mvnresolver.api;
 
 /**
- *
+ * <p>
+ * An {@link InvalidSettingsFileException} is thrown when the user tries to configure {@link IMvnResolverServiceFactory}
+ * with an invalid settings file.
+ * </p>
  */
 public class InvalidSettingsFileException extends RuntimeException {
 
     /**
-     *
+     * <p>
+     * Creates a new instance of type {@link InvalidSettingsFileException}.
+     * </p>
      * @param message
      * @param cause
      */

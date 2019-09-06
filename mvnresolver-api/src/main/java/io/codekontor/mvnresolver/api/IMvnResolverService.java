@@ -149,13 +149,18 @@ public interface IMvnResolverService {
         String toCanonicalForm();
     }
 
+    /**
+     * represents the maven depenency scopes. Dependency scope is used to limit the transitivity of a dependency
+     * (see https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope).
+     */
     enum Scope {
         COMPILE, PROVIDED, RUNTIME, TEST, SYSTEM, IMPORT
     }
 
 
-        /**
+    /**
      * <p>
+     * The {@link IMvnResolverJob} interface allows the fine-grained specification of maven resolve jobs.
      * </p>
      *
      * @author Gerd W&uuml;therich (gerd.wuetherich@codekontor.io)
@@ -164,6 +169,7 @@ public interface IMvnResolverService {
 
         /**
          * <p>
+         * Adds a new {@link IMvnResolverJobDependency} to this job.
          * </p>
          *
          * @param coordinate
@@ -173,45 +179,68 @@ public interface IMvnResolverService {
 
         /**
          * <p>
-         * Resolves the specified artifacts and returns the resulting files.
+         * Resolves the specified artifacts and returns the resulting files as an array.
          * </p>
          *
-         * @return
+         * @return the resolved files
          */
         File[] resolve();
 
         /**
          * <p>
+         * Resolves the specified artifacts and returns the resulting file URLs as an array.
          * </p>
          *
-         * @return
+         * @return the resulting file URLs
          */
         URL[] resolveToUrlArray();
     }
 
-    interface IMvnResolverJobDependency extends IMvnResolverJob{
+    /**
+     * <p>
+     * Represents a maven dependency to resolve.
+     * </p>
+     */
+    interface IMvnResolverJobDependency extends IMvnResolverJob {
 
+        /**
+         * <p>
+         * Adds the specified pattern (in format <code>groupId:artifactId</code>) to the list of exclusion patterns.
+         * </p>
+         *
+         * @param pattern the pattern to exclude in format <code>groupId:artifactId</code>. Must not be null.
+         * @return this {@link IMvnResolverJobDependency}
+         */
         IMvnResolverJobDependency withExclusionPattern(String pattern);
 
         /**
          * <p>
+         * Adds the specified patterns (in format <code>groupId:artifactId</code>) to the list of exclusion patterns .
          * </p>
          *
-         * @param patterns
-         * @return
+         * @param patterns the patterns to exclude in format <code>groupId:artifactId</code>
+         * @return this {@link IMvnResolverJobDependency}
          */
         IMvnResolverJobDependency withExclusionPatterns(String... patterns);
 
         /**
+         * <p>
+         * Specifies this dependency a optional (paramater isOptional == true) or mandatory
+         * (parameter isOptional == false).
+         * </p>
          *
-         * @return
+         * @param isOptional whether or not this dependency is optional
+         * @return this {@link IMvnResolverJobDependency}
          */
         IMvnResolverJobDependency withOptional(boolean isOptional);
 
         /**
+         * <p>
+         * Sets the specified scope for this dependency.
+         * </p>
          *
-         * @param scope
-         * @return
+         * @param scope the maven scope. Must not be null.
+         * @return this {@link IMvnResolverJobDependency}
          */
         IMvnResolverJobDependency withScope(Scope scope);
     }

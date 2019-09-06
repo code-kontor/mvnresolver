@@ -37,9 +37,6 @@ public class MvnResolverJobDependency implements IMvnResolverService.IMvnResolve
 
     private IMvnResolverService.Scope _scope;
 
-    /**
-     * @param resolverJobImplementation
-     */
     public MvnResolverJobDependency(MvnResolverJobImplementation resolverJobImplementation, String coordinate) {
         this._coordinate = checkNotNull(coordinate);
         this._resolverJobImplementation = checkNotNull(resolverJobImplementation);
