@@ -22,7 +22,7 @@
 
 	<groupId>io.codekontor.mvnresolver</groupId>
 	<artifactId>mvnresolver-parent</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0.RC1</version>
 
 	<packaging>pom</packaging>
 
@@ -371,6 +371,17 @@
 								</configuration>
 							</execution>
 						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6.7</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>ossrh</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>

@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>io.codekontor.mvnresolver</groupId>
 		<artifactId>mvnresolver-parent</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.0.RC1</version>
 		<relativePath>../mvnresolver-parent/pom.xml</relativePath>
 	</parent>
 
